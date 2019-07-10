@@ -61,7 +61,7 @@ public class DataSourceConfig {
         dataSource.setTestWhileIdle(testWhileIdle);
         dataSource.setTestOnBorrow(testOnBorrow);
         dataSource.setTestOnReturn(testOnReturn);
-        dataSource.setValidationQuery("SELECT 'x'");
+        dataSource.setValidationQuery("SELECT 1 FROM DUAL");
 
         dataSource.setPoolPreparedStatements(true);
         dataSource.setMaxPoolPreparedStatementPerConnectionSize(20);
