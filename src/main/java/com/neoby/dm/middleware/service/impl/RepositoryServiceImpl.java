@@ -1,8 +1,9 @@
 package com.neoby.dm.middleware.service.impl;
 
 import com.jayway.jsonpath.JsonPath;
-import com.neoby.dm.middleware.service.RepositoryService;
 import com.neoby.dm.middleware.dao.MysqlRepository;
+import com.neoby.dm.middleware.service.RepositoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -13,11 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-
+@Slf4j
 @Service("RepositoryService")
 public class RepositoryServiceImpl implements RepositoryService {
-
-//    public static Logger logger = LoggerFactory.getLogger(RepositoryServiceImpl.class);
 
     private final MysqlRepository mysqlRepository;
 
@@ -30,13 +29,14 @@ public class RepositoryServiceImpl implements RepositoryService {
     public void repository(String document) {
 
         String type = JsonPath.read(document, "$.type");
-        String tableName = JsonPath.read(document, "$.database");
-        tableName += "." + JsonPath.read(document, "$.table");
+        String tableName = JsonPath.read(document, "$.table");
         LinkedHashMap data = JsonPath.read(document, "$.data");
 
         if (type.equals("insert")) {
+            log.info("insert {}", tableName);
             insertMysql(tableName, data);
         } else if (type.equals("update")) {
+            log.info("update {}", tableName);
             LinkedHashMap oldData = JsonPath.read(document, "$.old");
             LinkedHashMap primaryKeys = JsonPath.read(document, "$.primaryKey");
             updateMysql(tableName, data, oldData, primaryKeys);
@@ -63,7 +63,7 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     private String convertSql(Object object) {
-        if (ObjectUtils.isEmpty(object)){
+        if (ObjectUtils.isEmpty(object)) {
             return "null";
         }
         return (object instanceof String) ? "'" + object + "'" : object.toString();
@@ -85,7 +85,7 @@ public class RepositoryServiceImpl implements RepositoryService {
         }
 
         //sql_condition
-        if (primaryKeys.isEmpty()){
+        if (primaryKeys.isEmpty()) {
             sql_condition = generateSqlNormal(data, oldData);
         } else {
             sql_condition = generateSqlIndex(primaryKeys);
@@ -95,14 +95,14 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
 
-    private StringBuilder generateSqlNormal(LinkedHashMap data, LinkedHashMap oldData){
+    private StringBuilder generateSqlNormal(LinkedHashMap data, LinkedHashMap oldData) {
         Set<String> keySets = oldData.keySet();
         StringBuilder sql_condition = new StringBuilder("where ");
         Iterator<Map.Entry> iterator2 = data.entrySet().iterator();
         while (iterator2.hasNext()) {
             Map.Entry entry = iterator2.next();
-            if (entry.getKey()!= null && keySets.contains(entry.getKey())) {
-                if (!iterator2.hasNext()){
+            if (entry.getKey() != null && keySets.contains(entry.getKey())) {
+                if (!iterator2.hasNext()) {
                     sql_condition = new StringBuilder(sql_condition.substring(0, sql_condition.length() - 4) + ";");
                 }
                 continue;
@@ -117,7 +117,7 @@ public class RepositoryServiceImpl implements RepositoryService {
         return sql_condition;
     }
 
-    private StringBuilder generateSqlIndex(LinkedHashMap primaryKeys){
+    private StringBuilder generateSqlIndex(LinkedHashMap primaryKeys) {
         StringBuilder sql_condition = new StringBuilder("where ");
         Iterator<Map.Entry> iterator = primaryKeys.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -130,8 +130,6 @@ public class RepositoryServiceImpl implements RepositoryService {
         }
         return sql_condition;
     }
-
-
 
 
 }

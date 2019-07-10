@@ -20,4 +20,11 @@ public class Jtest {
 
     }
 
+
+    @Test
+    public void test2() {
+        String tableName = "zf_message.t_transaction_message_log";
+        System.out.println(tableName.split("\\.")[1]);
+    }
+
 }
