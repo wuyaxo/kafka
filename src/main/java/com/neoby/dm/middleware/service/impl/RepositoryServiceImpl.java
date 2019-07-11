@@ -132,4 +132,15 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
 
+    @Override
+    public void executeDDL(String ddlSql) {
+        log.info("123");
+        if (ddlSql.toUpperCase().indexOf("DROP") >= 0) {
+            log.error("企图执行删表语句:{}", ddlSql);
+        } else {
+            log.info("执行DDL语句:{}", ddlSql);
+            mysqlRepository.execute(ddlSql);
+        }
+
+    }
 }

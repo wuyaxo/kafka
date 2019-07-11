@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.neoby.dm</groupId>
     <artifactId>middleware</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
     <name>middleware</name>
     <description>middleware for Dm</description>
 

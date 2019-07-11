@@ -10,7 +10,6 @@ public class MiddlewareApplication {
 
 
     public static void main(String[] args) {
-
         SpringApplication.run(MiddlewareApplication.class, args);
         log.info("程序启动完毕了");
     }
